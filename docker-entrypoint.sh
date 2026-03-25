@@ -5,8 +5,8 @@ set -e
 bun run apps/server/src/index.ts &
 API_PID=$!
 
-# Start the web server (TanStack Start output)
-bun run apps/web/dist/server/server.js &
+# Start the web server (custom Bun server)
+(cd apps/web && bun run server.ts) &
 WEB_PID=$!
 
 # Forward signals to both children

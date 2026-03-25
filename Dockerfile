@@ -30,6 +30,7 @@ COPY apps/server ./apps/server
 # Web SSR server — TanStack Start outputs to dist/
 COPY --from=web-builder /app/dist         ./apps/web/dist
 COPY --from=web-builder /app/node_modules ./apps/web/node_modules
+COPY apps/web/server.ts                   ./apps/web/server.ts
 
 # Persistent data directory for SQLite — mount a volume here
 RUN mkdir -p /app/data
