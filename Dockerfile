@@ -3,8 +3,8 @@
 FROM oven/bun:1 AS web-builder
 WORKDIR /app
 
-COPY apps/web/package.json apps/web/bun.lock ./
-RUN bun install --frozen-lockfile
+COPY apps/web/package.json ./
+RUN bun install
 
 COPY apps/web .
 RUN bun run build
@@ -16,8 +16,8 @@ RUN echo "=== web build output ===" && ls -la
 FROM oven/bun:1 AS server-deps
 WORKDIR /app
 
-COPY apps/server/package.json apps/server/bun.lock ./
-RUN bun install --frozen-lockfile --production
+COPY apps/server/package.json ./
+RUN bun install --production
 
 # ── runner ────────────────────────────────────────────────────────────────────
 FROM oven/bun:1 AS runner
