@@ -18,20 +18,12 @@ export default function Header() {
 							<span className="hidden text-sm text-[var(--sea-ink-soft)] sm:block">
 								{user.username}
 							</span>
-							<Button
-								type="button"
-								onClick={() => signOut()}
-							>
+							<Button type="button" onClick={() => signOut()}>
 								Sign out
 							</Button>
 						</div>
-          ) : (
-              <Button render={	<Link
-							to="/login"
-						>
-							Sign in
-						</Link>}/>
-
+					) : (
+						<Button render={<Link to="/login">Sign in</Link>} />
 					)}
 				</div>
 			</nav>
