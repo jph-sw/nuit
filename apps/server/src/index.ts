@@ -15,7 +15,7 @@ const logger = new Log();
 
 migrate();
 
-const server = Bun.serve({
+Bun.serve({
 	port: PORT,
 	routes: {
 		"/api/health": {
