@@ -9,8 +9,6 @@ RUN bun install
 COPY apps/web .
 RUN bun run build
 
-# Show what was produced so a failed copy gives a clear error
-RUN echo "=== web build output ===" && ls -la
 
 # ── server deps ───────────────────────────────────────────────────────────────
 FROM oven/bun:1 AS server-deps
@@ -29,8 +27,8 @@ ENV NODE_ENV=production
 COPY --from=server-deps /app/node_modules ./apps/server/node_modules
 COPY apps/server ./apps/server
 
-# Web SSR server — TanStack Start (Vinxi/Nitro) outputs to .output/
-COPY --from=web-builder /app/.output ./apps/web/.output
+# Web SSR server — TanStack Start outputs to dist/
+COPY --from=web-builder /app/dist ./apps/web/dist
 
 # Persistent data directory for SQLite — mount a volume here
 RUN mkdir -p /app/data

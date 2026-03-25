@@ -5,8 +5,8 @@ set -e
 bun run apps/server/src/index.ts &
 API_PID=$!
 
-# Start the web server (TanStack Start / Vinxi output)
-bun run apps/web/.output/server/index.mjs &
+# Start the web server (TanStack Start output)
+bun run apps/web/dist/server/server.js &
 WEB_PID=$!
 
 # Forward signals to both children
