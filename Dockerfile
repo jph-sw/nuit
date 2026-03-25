@@ -1,16 +1,23 @@
-# ── deps ──────────────────────────────────────────────────────────────────────
-FROM oven/bun:1 AS deps
+# ── web builder ───────────────────────────────────────────────────────────────
+# Built independently so it uses apps/web/bun.lock rather than the workspace root lockfile.
+FROM oven/bun:1 AS web-builder
 WORKDIR /app
 
-COPY package.json bun.lock ./
-COPY apps/server/package.json ./apps/server/
-COPY apps/web/package.json     ./apps/web/
+COPY apps/web/package.json apps/web/bun.lock ./
 RUN bun install --frozen-lockfile
 
-# ── web builder ───────────────────────────────────────────────────────────────
-FROM deps AS web-builder
-COPY apps/web ./apps/web
-RUN bun run --filter @nuit/web build
+COPY apps/web .
+RUN bun run build
+
+# Show what was produced so a failed copy gives a clear error
+RUN echo "=== web build output ===" && ls -la
+
+# ── server deps ───────────────────────────────────────────────────────────────
+FROM oven/bun:1 AS server-deps
+WORKDIR /app
+
+COPY apps/server/package.json apps/server/bun.lock ./
+RUN bun install --frozen-lockfile --production
 
 # ── runner ────────────────────────────────────────────────────────────────────
 FROM oven/bun:1 AS runner
@@ -18,17 +25,14 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Shared node_modules (workspace root)
-COPY --from=deps /app/node_modules ./node_modules
-
-# Server
-COPY --from=deps /app/apps/server/node_modules ./apps/server/node_modules
+# API server
+COPY --from=server-deps /app/node_modules ./apps/server/node_modules
 COPY apps/server ./apps/server
 
-# Web (built output only — no src or dev deps needed)
-COPY --from=web-builder /app/apps/web/.output ./apps/web/.output
+# Web SSR server — TanStack Start (Vinxi/Nitro) outputs to .output/
+COPY --from=web-builder /app/.output ./apps/web/.output
 
-# Persistent data directory (mount a volume here for SQLite)
+# Persistent data directory for SQLite — mount a volume here
 RUN mkdir -p /app/data
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
