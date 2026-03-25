@@ -1,0 +1,23 @@
+services:
+  nuit:
+    image: ghcr.io/jph-sw/nuit:latest
+    restart: unless-stopped
+    ports:
+      - '3000:3000' # web (TanStack Start SSR)
+      - '3001:3001' # api
+    environment:
+      # Web — server-side session encryption key (min 32 chars)
+      SESSION_SECRET: ${SESSION_SECRET}
+      # Web — internal URL the SSR server uses to reach the API
+      API_URL: http://localhost:3001
+    volumes:
+      - data:/app/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/api/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  data:
