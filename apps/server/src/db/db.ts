@@ -1,3 +1,6 @@
 import { Database } from "bun:sqlite";
+import { join } from "node:path";
 
-export const db = new Database("./data/database.sqlite");
+const DB_DIR = join(import.meta.dir, "../../../../data");
+
+export const db = new Database(`${DB_DIR}/database.sqlite`);
