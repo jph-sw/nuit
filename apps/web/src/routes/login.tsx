@@ -2,6 +2,8 @@ import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import * as React from 'react'
 import { signInFn, signUpFn } from '../lib/auth'
+import { Button } from '#/components/ui/button'
+import { Input } from '#/components/ui/input'
 
 export const Route = createFileRoute('/login')({
   beforeLoad: ({ context }) => {
@@ -48,7 +50,7 @@ function LoginPage() {
 
   return (
     <main className="page-wrap flex min-h-[80vh] items-center justify-center px-4">
-      <div className="island-shell rise-in w-full max-w-sm rounded-2xl px-8 py-10">
+      <div className="shadow-xl bg-secondary border w-full max-w-sm rounded-2xl px-8 py-10">
         <p className="island-kicker mb-3">
           {mode === 'sign-in' ? 'Welcome back' : 'Create account'}
         </p>
@@ -59,25 +61,23 @@ function LoginPage() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1.5 text-sm font-medium text-[var(--sea-ink)]">
             Username
-            <input
+            <Input
               name="username"
               type="text"
               required
               autoComplete="username"
-              className="rounded-lg border border-[var(--line)] bg-[var(--input-bg,var(--chip-bg))] px-3 py-2 text-sm outline-none ring-[var(--lagoon)] focus:ring-2"
             />
           </label>
 
           <label className="flex flex-col gap-1.5 text-sm font-medium text-[var(--sea-ink)]">
             Password
-            <input
+            <Input
               name="password"
               type="password"
               required
               autoComplete={
                 mode === 'sign-in' ? 'current-password' : 'new-password'
               }
-              className="rounded-lg border border-[var(--line)] bg-[var(--input-bg,var(--chip-bg))] px-3 py-2 text-sm outline-none ring-[var(--lagoon)] focus:ring-2"
             />
           </label>
 
@@ -87,27 +87,25 @@ function LoginPage() {
             </p>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={pending}
-            className="mt-2 rounded-full bg-[var(--lagoon)] px-5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 disabled:opacity-60"
           >
             {pending ? '…' : mode === 'sign-in' ? 'Sign in' : 'Sign up'}
-          </button>
+          </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-[var(--sea-ink-soft)]">
+        <p className="mt-6 text-center text-sm">
           {mode === 'sign-in' ? "Don't have an account?" : 'Already have an account?'}{' '}
-          <button
+          <Button
             type="button"
             onClick={() => {
               setMode(mode === 'sign-in' ? 'sign-up' : 'sign-in')
               setError(null)
             }}
-            className="font-semibold text-[var(--lagoon-deep)] hover:underline"
           >
             {mode === 'sign-in' ? 'Sign up' : 'Sign in'}
-          </button>
+          </Button>
         </p>
       </div>
     </main>
