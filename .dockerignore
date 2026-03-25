@@ -1,0 +1,13 @@
+.git
+.github
+**/node_modules
+**/dist
+**/.output
+**/.nitro
+**/.tanstack
+**/.vinxi
+**/coverage
+data
+.env
+.env.*
+*.local
