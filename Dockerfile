@@ -5,8 +5,7 @@ WORKDIR /app
 COPY package.json bun.lock ./
 COPY packages/types/package.json ./packages/types/package.json
 COPY apps/web/package.json ./apps/web/package.json
-RUN bun install --filter '@nuit/web' --frozen-lockfile
-
+RUN bun install --filter '@nuit/web' 
 COPY packages/types ./packages/types
 COPY apps/web ./apps/web
 RUN bun run --filter '@nuit/web' build
@@ -19,8 +18,7 @@ WORKDIR /app
 COPY package.json bun.lock ./
 COPY packages/types/package.json ./packages/types/package.json
 COPY apps/server/package.json ./apps/server/package.json
-RUN bun install --filter '@nuit/server' --production --frozen-lockfile
-
+RUN bun install --filter '@nuit/server' --production 
 
 # ── runner ────────────────────────────────────────────────────────────────────
 FROM oven/bun:1 AS runner
