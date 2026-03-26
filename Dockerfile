@@ -4,10 +4,12 @@ WORKDIR /app
 
 COPY package.json bun.lock ./
 COPY packages/types/package.json ./packages/types/package.json
-COPY apps/web/package.json ./apps/web/package.json
-RUN bun install --filter '@nuit/web' 
+COPY apps/web/package.json       ./apps/web/package.json
+COPY apps/server/package.json    ./apps/server/package.json
+RUN bun install
+
 COPY packages/types ./packages/types
-COPY apps/web ./apps/web
+COPY apps/web       ./apps/web
 RUN bun run --filter '@nuit/web' build
 
 
@@ -17,8 +19,10 @@ WORKDIR /app
 
 COPY package.json bun.lock ./
 COPY packages/types/package.json ./packages/types/package.json
-COPY apps/server/package.json ./apps/server/package.json
-RUN bun install --filter '@nuit/server' --production 
+COPY apps/web/package.json       ./apps/web/package.json
+COPY apps/server/package.json    ./apps/server/package.json
+RUN bun install --production
+
 
 # ── runner ────────────────────────────────────────────────────────────────────
 FROM oven/bun:1 AS runner
@@ -30,8 +34,8 @@ ENV NODE_ENV=production
 COPY packages/types ./packages/types
 
 # API server
+COPY --from=server-deps /app/node_modules          ./node_modules
 COPY --from=server-deps /app/apps/server/node_modules ./apps/server/node_modules
-COPY --from=server-deps /app/node_modules ./node_modules
 COPY apps/server ./apps/server
 
 # Web SSR server — TanStack Start outputs to dist/
