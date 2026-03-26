@@ -1,8 +1,14 @@
+# ── types package ─────────────────────────────────────────────────────────────
+FROM oven/bun:1 AS types-builder
+WORKDIR /app
+COPY packages/types ./packages/types
+RUN cd packages/types && bun install
+
 # ── web builder ───────────────────────────────────────────────────────────────
-# Built independently so it uses apps/web/bun.lock rather than the workspace root lockfile.
 FROM oven/bun:1 AS web-builder
 WORKDIR /app
 
+COPY --from=types-builder /app/packages/types ./packages/types
 COPY apps/web/package.json ./
 RUN bun install
 
@@ -14,6 +20,7 @@ RUN bun run build
 FROM oven/bun:1 AS server-deps
 WORKDIR /app
 
+COPY --from=types-builder /app/packages/types ./packages/types
 COPY apps/server/package.json ./
 RUN bun install --production
 
@@ -22,6 +29,9 @@ FROM oven/bun:1 AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+
+# Shared packages
+COPY --from=types-builder /app/packages/types ./packages/types
 
 # API server
 COPY --from=server-deps /app/node_modules ./apps/server/node_modules
