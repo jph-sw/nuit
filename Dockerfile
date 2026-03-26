@@ -1,28 +1,26 @@
-# ── types package ─────────────────────────────────────────────────────────────
-FROM oven/bun:1 AS types-builder
-WORKDIR /app
-COPY packages/types ./packages/types
-RUN cd packages/types && bun install
-
 # ── web builder ───────────────────────────────────────────────────────────────
 FROM oven/bun:1 AS web-builder
 WORKDIR /app
 
-COPY --from=types-builder /app/packages/types ./packages/types
-COPY apps/web/package.json ./
-RUN bun install
+COPY package.json bun.lock ./
+COPY packages/types/package.json ./packages/types/package.json
+COPY apps/web/package.json ./apps/web/package.json
+RUN bun install --filter '@nuit/web' --frozen-lockfile
 
-COPY apps/web .
-RUN bun run build
+COPY packages/types ./packages/types
+COPY apps/web ./apps/web
+RUN bun run --filter '@nuit/web' build
 
 
 # ── server deps ───────────────────────────────────────────────────────────────
 FROM oven/bun:1 AS server-deps
 WORKDIR /app
 
-COPY --from=types-builder /app/packages/types ./packages/types
-COPY apps/server/package.json ./
-RUN bun install --production
+COPY package.json bun.lock ./
+COPY packages/types/package.json ./packages/types/package.json
+COPY apps/server/package.json ./apps/server/package.json
+RUN bun install --filter '@nuit/server' --production --frozen-lockfile
+
 
 # ── runner ────────────────────────────────────────────────────────────────────
 FROM oven/bun:1 AS runner
@@ -31,16 +29,17 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Shared packages
-COPY --from=types-builder /app/packages/types ./packages/types
+COPY packages/types ./packages/types
 
 # API server
-COPY --from=server-deps /app/node_modules ./apps/server/node_modules
+COPY --from=server-deps /app/apps/server/node_modules ./apps/server/node_modules
+COPY --from=server-deps /app/node_modules ./node_modules
 COPY apps/server ./apps/server
 
 # Web SSR server — TanStack Start outputs to dist/
-COPY --from=web-builder /app/dist         ./apps/web/dist
-COPY --from=web-builder /app/node_modules ./apps/web/node_modules
-COPY apps/web/server.ts                   ./apps/web/server.ts
+COPY --from=web-builder /app/apps/web/dist         ./apps/web/dist
+COPY --from=web-builder /app/apps/web/node_modules ./apps/web/node_modules
+COPY apps/web/server.ts                            ./apps/web/server.ts
 
 # Persistent data directory for SQLite — mount a volume here
 RUN mkdir -p /app/data
