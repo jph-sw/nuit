@@ -78,7 +78,9 @@ export function FileExplorer({ files }: { files: File[] }) {
 													{group.map((item) => (
 														<DropdownMenuItem
 															key={item.label}
-															variant={item.destructive ? "destructive" : undefined}
+															variant={
+																item.destructive ? "destructive" : undefined
+															}
 														>
 															<HugeiconsIcon icon={item.icon} />
 															{item.label}
@@ -100,7 +102,9 @@ export function FileExplorer({ files }: { files: File[] }) {
 									{group.map((item) => (
 										<ContextMenuItem
 											key={item.label}
-											className={item.destructive ? "text-destructive" : undefined}
+											className={
+												item.destructive ? "text-destructive" : undefined
+											}
 										>
 											<HugeiconsIcon icon={item.icon} />
 											{item.label}

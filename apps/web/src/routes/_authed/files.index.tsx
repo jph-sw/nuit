@@ -7,20 +7,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
 	ListViewIcon,
 	FolderFileStorageIcon,
-	Add01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 import { FileExplorer } from "#/components/dashboard/file-explorer";
-import { Button } from "#/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "#/components/ui/dialog";
-import { Input } from "#/components/ui/input";
 import { FileUploadDialog } from "#/components/dashboard/file-upload-dialog";
 
 export const Route = createFileRoute("/_authed/files/")({
