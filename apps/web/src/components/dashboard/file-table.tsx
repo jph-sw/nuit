@@ -1,33 +1,28 @@
 import {
 	Table,
 	TableBody,
-	TableCaption,
 	TableCell,
 	TableHead,
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import type { File } from "@nuit/types";
 
-export function FileTable() {
+export function FileTable({ files }: { files: File[] }) {
 	return (
 		<div>
 			<Table>
-				<TableCaption>A list of your recent invoices.</TableCaption>
 				<TableHeader>
 					<TableRow>
-						<TableHead className="w-25">Invoice</TableHead>
-						<TableHead>Status</TableHead>
-						<TableHead>Method</TableHead>
-						<TableHead className="text-right">Amount</TableHead>
+						<TableHead className="w-25">Filename</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					<TableRow>
-						<TableCell className="font-medium">INV001</TableCell>
-						<TableCell>Paid</TableCell>
-						<TableCell>Credit Card</TableCell>
-						<TableCell className="text-right">$250.00</TableCell>
-					</TableRow>
+					{files.map((file) => (
+						<TableRow>
+							<TableCell>{file.filename}</TableCell>
+						</TableRow>
+					))}
 				</TableBody>
 			</Table>
 		</div>

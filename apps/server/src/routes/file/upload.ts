@@ -4,6 +4,7 @@ import { type } from "arktype";
 import type { BunRequest } from "bun";
 import { db } from "../../db/db";
 import { authenticate } from "../../utils/request";
+import mime from "mime-types"
 
 const UPLOAD_DIR = join(import.meta.dir, "../../../../../data");
 
@@ -26,6 +27,7 @@ export const fileUploadRoute = {
 		}
 
 		const safeName = headers["x-filename"].replace(/[^a-zA-Z0-9._-]/g, "_");
+    const mimeType = mime.lookup(safeName);
 
 		await mkdir(UPLOAD_DIR, { recursive: true });
 
@@ -35,11 +37,13 @@ export const fileUploadRoute = {
 		}
 		await writer.end();
 
+
 		const insertStatement = db.prepare(
-			"INSERT INTO files (id, filename, size VALUES (?1,?2,?3)",
+			"INSERT INTO files (id, filename, size, mime_type) VALUES (?1,?2,?3,?4)",
 		);
 
-		insertStatement.run(Bun.randomUUIDv7(), safeName, "null");
+		const fileSize = (await Bun.file(join(UPLOAD_DIR, safeName)).stat()).size;
+		insertStatement.run(Bun.randomUUIDv7(), safeName, fileSize, mimeType || null);
 
 		return Response.json({ filename: safeName }, { status: 201 });
 	},

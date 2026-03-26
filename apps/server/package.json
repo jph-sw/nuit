@@ -7,9 +7,13 @@
     "dev": "bun --hot src/index.ts"
   },
   "dependencies": {
-    "arktype": "^2.2.0"
+    "@nuit/types": "workspace:*",
+    "arktype": "^2.2.0",
+    "mime-db": "^1.54.0",
+    "mime-types": "^3.0.2"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/mime-types": "^3.0.1"
   }
 }

@@ -7,13 +7,7 @@ export const Route = createFileRoute("/")({ component: App });
 function App() {
 	return (
 		<main className="page-wrap px-4 pb-8 pt-14 flex justify-center">
-			<div className="w-6xl">
-				<Card>
-					<CardContent>
-						<FileTable />
-					</CardContent>
-				</Card>
-			</div>
+			<div className="w-6xl"></div>
 		</main>
 	);
 }

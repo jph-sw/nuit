@@ -21,7 +21,8 @@ const migrations: string[] = [
 		password_hash TEXT NOT NULL,
 		created_at INTEGER NOT NULL
 	) STRICT`,
-	`ALTER TABLE session ADD COLUMN user_id TEXT REFERENCES user(id)`,
+  `ALTER TABLE session ADD COLUMN user_id TEXT REFERENCES user(id)`,
+	`ALTER TABLE files ADD COLUMN mime_type TEXT`
 ];
 
 export function migrate() {

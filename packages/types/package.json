@@ -1,0 +1,11 @@
+{
+	"name": "@nuit/types",
+	"type": "module",
+	"private": true,
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"arktype": "^2.2.0"
+	}
+}
