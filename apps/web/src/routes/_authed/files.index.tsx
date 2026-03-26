@@ -7,10 +7,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
 	ListViewIcon,
 	FolderFileStorageIcon,
+  Add01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 import { FileExplorer } from "#/components/dashboard/file-explorer";
+import { Button } from "#/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "#/components/ui/dialog";
+import { Input } from "#/components/ui/input";
 
 export const Route = createFileRoute("/_authed/files/")({
 	component: RouteComponent,
@@ -19,23 +23,37 @@ export const Route = createFileRoute("/_authed/files/")({
 function RouteComponent() {
 	const [viewType, setViewType] = useState("explorer");
 
-	const { data: files, error } = useQuery(filesQueryOptions);
+	const { data: files } = useQuery(filesQueryOptions);
 
 	return (
 		<main className="page-wrap px-4 pb-8 pt-14 flex justify-center">
 			<div className="w-6xl">
 				<Card>
 					<CardHeader>
-						<Tabs value={viewType} onValueChange={(e) => setViewType(e)}>
-							<TabsList>
-								<TabsTrigger value={"explorer"}>
-									<HugeiconsIcon icon={ListViewIcon} />
-								</TabsTrigger>
-								<TabsTrigger value={"list"}>
-									<HugeiconsIcon icon={FolderFileStorageIcon} />
-								</TabsTrigger>
-							</TabsList>
-						</Tabs>
+            <div className="flex w-full justify-between items-center">
+              <Dialog>
+                <DialogTrigger render={<Button><HugeiconsIcon icon={Add01Icon} />Upload</Button>} />
+                <DialogContent className={"min-w-2xl"}>
+                  <DialogHeader>
+                    <DialogTitle>Upload file/s</DialogTitle>
+                  </DialogHeader>
+                  <form className="space-y-4">
+                    <Input type="file" multiple />
+                    <Button>Upload</Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+							<Tabs value={viewType} onValueChange={(e) => setViewType(e)}>
+								<TabsList>
+									<TabsTrigger value={"explorer"}>
+										<HugeiconsIcon icon={FolderFileStorageIcon} />
+									</TabsTrigger>
+									<TabsTrigger value={"list"}>
+										<HugeiconsIcon icon={ListViewIcon} />
+									</TabsTrigger>
+								</TabsList>
+							</Tabs>
+						</div>
 					</CardHeader>
 					<CardContent>
 						{files ? (

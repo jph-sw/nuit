@@ -12,11 +12,10 @@ export async function api<T = unknown>(
 	path: string,
 	init: RequestInit = {},
 ): Promise<T> {
-  console.log("Starting Request")
+	console.log("Starting Request");
 	const session = await getSession<SessionData>(sessionConfig);
 
- console.log("Got Session", session.id)
-
+	console.log("Got Session", session.id);
 
 	const res = await fetch(`${API_URL}${path}`, {
 		...init,
@@ -26,15 +25,17 @@ export async function api<T = unknown>(
 		},
 	});
 
-	console.log("finished request")
+	console.log("finished request");
 
-  if (!res.ok) {
-    const json = await res.json()
-    console.log(`${init.method ?? "GET"} ${path} failed: ${res.statusText} ${JSON.stringify(json)}`)
+	if (!res.ok) {
+		const json = await res.json();
+		console.log(
+			`${init.method ?? "GET"} ${path} failed: ${res.statusText} ${JSON.stringify(json)}`,
+		);
 		throw new Error(
 			`${init.method ?? "GET"} ${path} failed: ${res.statusText}`,
 		);
-  }
+	}
 
 	return res.json();
 }
