@@ -15,7 +15,7 @@ export default function Header() {
 					<ThemeToggle />
 					{user ? (
 						<div className="flex items-center gap-2">
-							<span className="hidden text-sm text-[var(--sea-ink-soft)] sm:block">
+							<span className="hidden text-sm text-(--sea-ink-soft) sm:block">
 								{user.username}
 							</span>
 							<Button type="button" onClick={() => signOut()}>

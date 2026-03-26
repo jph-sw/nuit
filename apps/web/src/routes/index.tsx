@@ -1,5 +1,3 @@
-import { FileTable } from "#/components/dashboard/file-table";
-import { Card, CardContent } from "#/components/ui/card";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({ component: App });
