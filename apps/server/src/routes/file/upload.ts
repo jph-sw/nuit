@@ -26,10 +26,20 @@ export const fileUploadRoute = {
 			return Response.json({ error: headers.summary }, { status: 400 });
 		}
 
-		const safeName = headers["x-filename"].replace(/[^a-zA-Z0-9._-]/g, "_");
-    const mimeType = mime.lookup(safeName);
+		const baseName = headers["x-filename"].replace(/[^a-zA-Z0-9._-]/g, "_");
+		const ext = baseName.includes(".") ? baseName.slice(baseName.lastIndexOf(".")) : "";
+		const nameWithoutExt = ext ? baseName.slice(0, -ext.length) : baseName;
 
 		await mkdir(UPLOAD_DIR, { recursive: true });
+
+		let safeName = baseName;
+		let counter = 2;
+		while (await Bun.file(join(UPLOAD_DIR, safeName)).exists()) {
+			safeName = `${nameWithoutExt}-${counter}${ext}`;
+			counter++;
+		}
+
+		const mimeType = mime.lookup(safeName);
 
 		const writer = Bun.file(join(UPLOAD_DIR, safeName)).writer();
 		for await (const chunk of req.body as AsyncIterable<Uint8Array>) {
