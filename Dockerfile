@@ -21,7 +21,7 @@ COPY package.json bun.lock ./
 COPY packages/types/package.json ./packages/types/package.json
 COPY apps/web/package.json       ./apps/web/package.json
 COPY apps/server/package.json    ./apps/server/package.json
-RUN bun install --production
+RUN bun install --production --no-save
 
 
 # ── runner ────────────────────────────────────────────────────────────────────
