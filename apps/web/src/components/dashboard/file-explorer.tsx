@@ -1,7 +1,9 @@
-import type { File } from "@nuit/types";
+import type { File, Folder } from "@nuit/types";
 import { downloadFileFn } from "#/data/files-actions";
 import { FileRenameDialog } from "#/components/dashboard/file-rename-dialog";
 import { FileDetailsDialog } from "#/components/dashboard/file-details-dialog";
+import { FileMoveDialog } from "#/components/dashboard/file-move-dialog";
+import { FolderCard } from "#/components/dashboard/folder-card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -45,6 +47,7 @@ type MenuGroup = MenuItem[];
 function FileCard({ file }: { file: File }) {
 	const [renameOpen, setRenameOpen] = useState(false);
 	const [detailsOpen, setDetailsOpen] = useState(false);
+	const [moveOpen, setMoveOpen] = useState(false);
 
 	function fileMenuGroups(): MenuGroup[] {
 		return [
@@ -54,7 +57,7 @@ function FileCard({ file }: { file: File }) {
 					icon: Download01Icon,
 					onClick: async () => {
 						const { blob, mimeType, filename } = await downloadFileFn({
-							data: { filename: file.filename },
+							data: { id: file.id },
 						});
 						const url = URL.createObjectURL(
 							new Blob([Uint8Array.from(atob(blob), (c) => c.charCodeAt(0))], { type: mimeType }),
@@ -69,7 +72,7 @@ function FileCard({ file }: { file: File }) {
 				{ label: "Share", icon: Share01Icon, disabled: true },
 			],
 			[
-				{ label: "Move to folder", icon: Move01Icon },
+				{ label: "Move to folder", icon: Move01Icon, onClick: () => setMoveOpen(true) },
 				{ label: "Make a copy", icon: Copy01Icon },
 				{ label: "Rename", icon: Edit04Icon, onClick: () => setRenameOpen(true) },
 				{ label: "Details", icon: InformationCircleIcon, onClick: () => setDetailsOpen(true) },
@@ -133,13 +136,25 @@ function FileCard({ file }: { file: File }) {
 			</ContextMenu>
 			<FileRenameDialog file={file} open={renameOpen} onOpenChange={setRenameOpen} />
 			<FileDetailsDialog file={file} open={detailsOpen} onOpenChange={setDetailsOpen} />
+			<FileMoveDialog file={file} open={moveOpen} onOpenChange={setMoveOpen} />
 		</>
 	);
 }
 
-export function FileExplorer({ files }: { files: File[] }) {
+export function FileExplorer({
+	files,
+	folders,
+	onNavigate,
+}: {
+	files: File[];
+	folders: Folder[];
+	onNavigate: (id: string) => void;
+}) {
 	return (
 		<div className="w-full h-fit border rounded-md flex flex-wrap gap-1 p-2">
+			{folders.map((folder) => (
+				<FolderCard key={folder.id} folder={folder} onOpen={() => onNavigate(folder.id)} />
+			))}
 			{files.map((file) => (
 				<FileCard key={file.id} file={file} />
 			))}

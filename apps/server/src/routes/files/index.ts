@@ -7,16 +7,22 @@ import { authenticate } from "../../utils/request";
 const FileArray = type(FileSchema.array());
 
 export const filesRoute = {
-  GET: async (req: BunRequest) => {
+	GET: async (req: BunRequest) => {
 		const session = await authenticate(req);
 		if (!session) {
 			return new Response("Unauthorized", { status: 401 });
 		}
 
+		const url = new URL(req.url);
+		const folderId = url.searchParams.get("folder_id");
 
-		const files = FileArray(db.query("SELECT * FROM files").all());
+		const rows =
+			folderId === null
+				? db.query("SELECT * FROM files WHERE folder_id IS NULL").all()
+				: db.query("SELECT * FROM files WHERE folder_id = ?").all(folderId);
 
-    if (files instanceof type.errors) {
+		const files = FileArray(rows);
+		if (files instanceof type.errors) {
 			return Response.json({ error: files.summary }, { status: 400 });
 		}
 

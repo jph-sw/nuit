@@ -22,7 +22,14 @@ const migrations: string[] = [
 		created_at INTEGER NOT NULL
 	) STRICT`,
   `ALTER TABLE session ADD COLUMN user_id TEXT REFERENCES user(id)`,
-	`ALTER TABLE files ADD COLUMN mime_type TEXT`
+	`ALTER TABLE files ADD COLUMN mime_type TEXT`,
+	`CREATE TABLE IF NOT EXISTS folders (
+		id TEXT NOT NULL PRIMARY KEY,
+		name TEXT NOT NULL,
+		parent_id TEXT REFERENCES folders(id),
+		created_at TEXT NOT NULL DEFAULT (datetime('now'))
+	)`,
+	`ALTER TABLE files ADD COLUMN folder_id TEXT REFERENCES folders(id)`,
 ];
 
 export function migrate() {

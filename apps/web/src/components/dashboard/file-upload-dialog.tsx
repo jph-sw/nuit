@@ -23,7 +23,7 @@ function fileToBase64(file: File): Promise<string> {
 	});
 }
 
-export function FileUploadDialog() {
+export function FileUploadDialog({ folderId = null }: { folderId?: string | null }) {
 	const [open, setOpen] = useState(false);
 	const queryClient = useQueryClient();
 
@@ -34,9 +34,9 @@ export function FileUploadDialog() {
 		onSubmit: async ({ value }) => {
 			for (const file of value.files) {
 				const base64 = await fileToBase64(file);
-				await uploadFileFn({ data: { filename: file.name, base64 } });
+				await uploadFileFn({ data: { filename: file.name, base64, folder_id: folderId } });
 			}
-			queryClient.invalidateQueries(filesQueryOptions);
+			queryClient.invalidateQueries(filesQueryOptions(folderId));
 			setOpen(false);
 		},
 	});
@@ -69,9 +69,7 @@ export function FileUploadDialog() {
 								type="file"
 								multiple
 								className="w-full"
-								onChange={(e) =>
-									field.handleChange(Array.from(e.target.files ?? []))
-								}
+								onChange={(e) => field.handleChange(Array.from(e.target.files ?? []))}
 							/>
 						)}
 					/>
