@@ -39,3 +39,30 @@ export async function api<T = unknown>(
 
 	return res.json();
 }
+
+export async function apiBlob(
+	path: string,
+	init: RequestInit = {},
+): Promise<{ blob: string; mimeType: string; filename: string }> {
+	const session = await getSession<SessionData>(sessionConfig);
+
+	const res = await fetch(`${API_URL}${path}`, {
+		...init,
+		headers: {
+			...init.headers,
+			Authorization: `Bearer ${session.data.token}`,
+		},
+	});
+
+	if (!res.ok) {
+		throw new Error(`${init.method ?? "GET"} ${path} failed: ${res.statusText}`);
+	}
+
+	const buffer = await res.arrayBuffer();
+	const base64 = Buffer.from(buffer).toString("base64");
+	const mimeType = res.headers.get("Content-Type") ?? "application/octet-stream";
+	const disposition = res.headers.get("Content-Disposition") ?? "";
+	const filename = disposition.match(/filename="(.+?)"/)?.[1] ?? path.split("/").pop() ?? "file";
+
+	return { blob: base64, mimeType, filename };
+}

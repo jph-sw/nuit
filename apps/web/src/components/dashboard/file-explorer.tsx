@@ -1,4 +1,5 @@
 import type { File } from "@nuit/types";
+import { downloadFileFn } from "#/data/files-actions";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -37,19 +38,37 @@ type MenuItem = {
 
 type MenuGroup = MenuItem[];
 
-const fileMenuGroups: MenuGroup[] = [
-	[
-		{ label: "Download", icon: Download01Icon },
-		{ label: "Share", icon: Share01Icon },
-	],
-	[
-		{ label: "Move to folder", icon: Move01Icon },
-		{ label: "Make a copy", icon: Copy01Icon },
-		{ label: "Rename", icon: Edit04Icon },
-		{ label: "Details", icon: InformationCircleIcon },
-	],
-	[{ label: "Move to trash", icon: Trash2, destructive: true }],
-];
+function fileMenuGroups(file: File): MenuGroup[] {
+	return [
+		[
+			{
+				label: "Download",
+				icon: Download01Icon,
+				onClick: async () => {
+					const { blob, mimeType, filename } = await downloadFileFn({
+						data: { filename: file.filename },
+					});
+					const url = URL.createObjectURL(
+						new Blob([Uint8Array.from(atob(blob), (c) => c.charCodeAt(0))], { type: mimeType }),
+					);
+					const a = document.createElement("a");
+					a.href = url;
+					a.download = filename;
+					a.click();
+					URL.revokeObjectURL(url);
+				},
+			},
+			{ label: "Share", icon: Share01Icon },
+		],
+		[
+			{ label: "Move to folder", icon: Move01Icon },
+			{ label: "Make a copy", icon: Copy01Icon },
+			{ label: "Rename", icon: Edit04Icon },
+			{ label: "Details", icon: InformationCircleIcon },
+		],
+		[{ label: "Move to trash", icon: Trash2, destructive: true }],
+	];
+}
 
 export function FileExplorer({ files }: { files: File[] }) {
 	return (
@@ -71,7 +90,7 @@ export function FileExplorer({ files }: { files: File[] }) {
 										}
 									/>
 									<DropdownMenuContent className="w-40" align="start">
-										{fileMenuGroups.map((group, i) => (
+										{fileMenuGroups(file).map((group, i) => (
 											<>
 												{i > 0 && <DropdownMenuSeparator />}
 												<DropdownMenuGroup key={i}>
@@ -81,6 +100,7 @@ export function FileExplorer({ files }: { files: File[] }) {
 															variant={
 																item.destructive ? "destructive" : undefined
 															}
+															onClick={item.onClick}
 														>
 															<HugeiconsIcon icon={item.icon} />
 															{item.label}
@@ -95,7 +115,7 @@ export function FileExplorer({ files }: { files: File[] }) {
 						</div>
 					</ContextMenuTrigger>
 					<ContextMenuContent className="w-40">
-						{fileMenuGroups.map((group, i) => (
+						{fileMenuGroups(file).map((group, i) => (
 							<>
 								{i > 0 && <ContextMenuSeparator />}
 								<ContextMenuGroup key={i}>
@@ -105,6 +125,7 @@ export function FileExplorer({ files }: { files: File[] }) {
 											className={
 												item.destructive ? "text-destructive" : undefined
 											}
+											onClick={item.onClick}
 										>
 											<HugeiconsIcon icon={item.icon} />
 											{item.label}
