@@ -1,6 +1,7 @@
 import type { File } from "@nuit/types";
 import { downloadFileFn } from "#/data/files-actions";
 import { FileRenameDialog } from "#/components/dashboard/file-rename-dialog";
+import { FileDetailsDialog } from "#/components/dashboard/file-details-dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -43,6 +44,7 @@ type MenuGroup = MenuItem[];
 
 function FileCard({ file }: { file: File }) {
 	const [renameOpen, setRenameOpen] = useState(false);
+	const [detailsOpen, setDetailsOpen] = useState(false);
 
 	function fileMenuGroups(): MenuGroup[] {
 		return [
@@ -70,7 +72,7 @@ function FileCard({ file }: { file: File }) {
 				{ label: "Move to folder", icon: Move01Icon },
 				{ label: "Make a copy", icon: Copy01Icon },
 				{ label: "Rename", icon: Edit04Icon, onClick: () => setRenameOpen(true) },
-				{ label: "Details", icon: InformationCircleIcon },
+				{ label: "Details", icon: InformationCircleIcon, onClick: () => setDetailsOpen(true) },
 			],
 			[{ label: "Move to trash", icon: Trash2, destructive: true }],
 		];
@@ -130,6 +132,7 @@ function FileCard({ file }: { file: File }) {
 				</ContextMenuContent>
 			</ContextMenu>
 			<FileRenameDialog file={file} open={renameOpen} onOpenChange={setRenameOpen} />
+			<FileDetailsDialog file={file} open={detailsOpen} onOpenChange={setDetailsOpen} />
 		</>
 	);
 }
