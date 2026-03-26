@@ -1,5 +1,6 @@
 import type { File } from "@nuit/types";
 import { downloadFileFn } from "#/data/files-actions";
+import { FileRenameDialog } from "#/components/dashboard/file-rename-dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -28,114 +29,116 @@ import {
 	Share01Icon,
 	Trash2,
 } from "@hugeicons/core-free-icons";
+import { useState } from "react";
 
 type MenuItem = {
 	label: string;
 	icon: typeof Download01Icon;
 	destructive?: boolean;
+	disabled?: boolean;
 	onClick?: () => void;
 };
 
 type MenuGroup = MenuItem[];
 
-function fileMenuGroups(file: File): MenuGroup[] {
-	return [
-		[
-			{
-				label: "Download",
-				icon: Download01Icon,
-				onClick: async () => {
-					const { blob, mimeType, filename } = await downloadFileFn({
-						data: { filename: file.filename },
-					});
-					const url = URL.createObjectURL(
-						new Blob([Uint8Array.from(atob(blob), (c) => c.charCodeAt(0))], { type: mimeType }),
-					);
-					const a = document.createElement("a");
-					a.href = url;
-					a.download = filename;
-					a.click();
-					URL.revokeObjectURL(url);
+function FileCard({ file }: { file: File }) {
+	const [renameOpen, setRenameOpen] = useState(false);
+
+	function fileMenuGroups(): MenuGroup[] {
+		return [
+			[
+				{
+					label: "Download",
+					icon: Download01Icon,
+					onClick: async () => {
+						const { blob, mimeType, filename } = await downloadFileFn({
+							data: { filename: file.filename },
+						});
+						const url = URL.createObjectURL(
+							new Blob([Uint8Array.from(atob(blob), (c) => c.charCodeAt(0))], { type: mimeType }),
+						);
+						const a = document.createElement("a");
+						a.href = url;
+						a.download = filename;
+						a.click();
+						URL.revokeObjectURL(url);
+					},
 				},
-			},
-			{ label: "Share", icon: Share01Icon },
-		],
-		[
-			{ label: "Move to folder", icon: Move01Icon },
-			{ label: "Make a copy", icon: Copy01Icon },
-			{ label: "Rename", icon: Edit04Icon },
-			{ label: "Details", icon: InformationCircleIcon },
-		],
-		[{ label: "Move to trash", icon: Trash2, destructive: true }],
-	];
+				{ label: "Share", icon: Share01Icon, disabled: true },
+			],
+			[
+				{ label: "Move to folder", icon: Move01Icon },
+				{ label: "Make a copy", icon: Copy01Icon },
+				{ label: "Rename", icon: Edit04Icon, onClick: () => setRenameOpen(true) },
+				{ label: "Details", icon: InformationCircleIcon },
+			],
+			[{ label: "Move to trash", icon: Trash2, destructive: true }],
+		];
+	}
+
+	const groups = fileMenuGroups();
+
+	const menuContent = (
+		MenuItem: typeof DropdownMenuItem | typeof ContextMenuItem,
+		Group: typeof DropdownMenuGroup | typeof ContextMenuGroup,
+		Separator: typeof DropdownMenuSeparator | typeof ContextMenuSeparator,
+	) =>
+		groups.map((group, i) => (
+			<>
+				{i > 0 && <Separator />}
+				<Group key={i}>
+					{group.map((item) => (
+						<MenuItem
+							key={item.label}
+							disabled={item.disabled}
+							onClick={item.onClick}
+						>
+							<HugeiconsIcon icon={item.icon} />
+							{item.label}
+						</MenuItem>
+					))}
+				</Group>
+			</>
+		));
+
+	return (
+		<>
+			<ContextMenu>
+				<ContextMenuTrigger>
+					<div className="h-40 w-50 group rounded border bg-secondary flex flex-col justify-end hover:border-gray-700">
+						{/*placeholder for image, icon etc*/}
+						<div className="..." />
+						<div className="bg-linear-to-t from-background to-transparent rounded h-8 flex w-full justify-between items-center px-1">
+							<p className="truncate flex h-fit">{file.filename}</p>
+							<DropdownMenu>
+								<DropdownMenuTrigger
+									children={
+										<Button size={"icon-xs"} variant={"outline"}>
+											<HugeiconsIcon icon={MoreVerticalIcon} />
+										</Button>
+									}
+								/>
+								<DropdownMenuContent className="w-40" align="start">
+									{menuContent(DropdownMenuItem, DropdownMenuGroup, DropdownMenuSeparator)}
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
+					</div>
+				</ContextMenuTrigger>
+				<ContextMenuContent className="w-40">
+					{menuContent(ContextMenuItem, ContextMenuGroup, ContextMenuSeparator)}
+				</ContextMenuContent>
+			</ContextMenu>
+			<FileRenameDialog file={file} open={renameOpen} onOpenChange={setRenameOpen} />
+		</>
+	);
 }
 
 export function FileExplorer({ files }: { files: File[] }) {
 	return (
 		<div className="w-full h-fit border rounded-md flex flex-wrap gap-1 p-2">
 			{files.map((file) => (
-				<ContextMenu key={file.id}>
-					<ContextMenuTrigger>
-						<div className="h-40 w-50 group rounded border bg-secondary flex flex-col justify-end hover:border-gray-700">
-							{/*placeholder for image, icon etc*/}
-							<div className="..." />
-							<div className="bg-linear-to-t from-background to-transparent rounded h-8 flex w-full justify-between items-center px-1">
-								<p className="truncate flex h-fit">{file.filename}</p>
-								<DropdownMenu>
-									<DropdownMenuTrigger
-										children={
-											<Button size={"icon-xs"} variant={"outline"}>
-												<HugeiconsIcon icon={MoreVerticalIcon} />
-											</Button>
-										}
-									/>
-									<DropdownMenuContent className="w-40" align="start">
-										{fileMenuGroups(file).map((group, i) => (
-											<>
-												{i > 0 && <DropdownMenuSeparator />}
-												<DropdownMenuGroup key={i}>
-													{group.map((item) => (
-														<DropdownMenuItem
-															key={item.label}
-															variant={
-																item.destructive ? "destructive" : undefined
-															}
-															onClick={item.onClick}
-														>
-															<HugeiconsIcon icon={item.icon} />
-															{item.label}
-														</DropdownMenuItem>
-													))}
-												</DropdownMenuGroup>
-											</>
-										))}
-									</DropdownMenuContent>
-								</DropdownMenu>
-							</div>
-						</div>
-					</ContextMenuTrigger>
-					<ContextMenuContent className="w-40">
-						{fileMenuGroups(file).map((group, i) => (
-							<>
-								{i > 0 && <ContextMenuSeparator />}
-								<ContextMenuGroup key={i}>
-									{group.map((item) => (
-										<ContextMenuItem
-											key={item.label}
-											className={
-												item.destructive ? "text-destructive" : undefined
-											}
-											onClick={item.onClick}
-										>
-											<HugeiconsIcon icon={item.icon} />
-											{item.label}
-										</ContextMenuItem>
-									))}
-								</ContextMenuGroup>
-							</>
-						))}
-					</ContextMenuContent>
-				</ContextMenu>
+				<FileCard key={file.id} file={file} />
 			))}
 		</div>
 	);

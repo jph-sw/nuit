@@ -12,6 +12,16 @@ export const downloadFileFn = createServerFn({ method: "GET" })
 		apiBlob(`/api/file/download/${encodeURIComponent(data.filename)}`),
 	);
 
+export const renameFileFn = createServerFn({ method: "POST" })
+	.inputValidator((d: unknown) => d as { id: string; filename: string })
+	.handler(({ data }) =>
+		api<{ filename: string }>(`/api/file/rename/${data.id}`, {
+			method: "PATCH",
+			body: JSON.stringify({ filename: data.filename }),
+			headers: { "Content-Type": "application/json" },
+		}),
+	);
+
 export const uploadFileFn = createServerFn({ method: "POST" })
 	.inputValidator((d: unknown) => d as { filename: string; base64: string })
 	.handler(({ data }) =>

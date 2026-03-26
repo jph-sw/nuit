@@ -6,6 +6,7 @@ import {
 	authSignUpRoute,
 } from "./routes/auth/index";
 import { fileDownloadRoute } from "./routes/file/download";
+import { fileRenameRoute } from "./routes/file/rename";
 import { fileUploadRoute } from "./routes/file/upload";
 import { filesRoute } from "./routes/files";
 import { Log } from "./utils/log";
@@ -30,6 +31,7 @@ Bun.serve({
 		"/api/auth/me": authMeRoute,
 		"/api/file/upload": fileUploadRoute,
 		"/api/file/download/:filename": fileDownloadRoute,
+		"/api/file/rename/:id": fileRenameRoute,
 		"/api/files": filesRoute,
 	},
 });
