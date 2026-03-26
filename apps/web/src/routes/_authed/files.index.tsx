@@ -7,14 +7,21 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
 	ListViewIcon,
 	FolderFileStorageIcon,
-  Add01Icon,
+	Add01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 import { FileExplorer } from "#/components/dashboard/file-explorer";
 import { Button } from "#/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "#/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "#/components/ui/dialog";
 import { Input } from "#/components/ui/input";
+import { FileUploadDialog } from "#/components/dashboard/file-upload-dialog";
 
 export const Route = createFileRoute("/_authed/files/")({
 	component: RouteComponent,
@@ -30,19 +37,8 @@ function RouteComponent() {
 			<div className="w-6xl">
 				<Card>
 					<CardHeader>
-            <div className="flex w-full justify-between items-center">
-              <Dialog>
-                <DialogTrigger render={<Button><HugeiconsIcon icon={Add01Icon} />Upload</Button>} />
-                <DialogContent className={"min-w-2xl"}>
-                  <DialogHeader>
-                    <DialogTitle>Upload file/s</DialogTitle>
-                  </DialogHeader>
-                  <form className="space-y-4">
-                    <Input type="file" multiple />
-                    <Button>Upload</Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
+						<div className="flex w-full justify-between items-center">
+							<FileUploadDialog />
 							<Tabs value={viewType} onValueChange={(e) => setViewType(e)}>
 								<TabsList>
 									<TabsTrigger value={"explorer"}>
