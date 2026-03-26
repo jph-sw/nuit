@@ -40,6 +40,6 @@ export const folderDeleteRoute = {
 		db.run("DELETE FROM folders WHERE id = ?", [id]);
 		await rmdir(dirPath);
 
-		return new Response(null, { status: 204 });
+		return Response.json({});
 	},
 };

@@ -86,4 +86,4 @@ export const renameFolderFn = createServerFn({ method: "POST" })
 
 export const deleteFolderFn = createServerFn({ method: "POST" })
 	.inputValidator((d: unknown) => d as { id: string })
-	.handler(({ data }) => api(`/api/folder/${data.id}`, { method: "DELETE" }));
+	.handler(({ data }) => api<Record<string, never>>(`/api/folder/${data.id}`, { method: "DELETE" }));

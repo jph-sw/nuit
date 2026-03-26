@@ -20,7 +20,7 @@ export function FolderBreadcrumb({
 			<button
 				type="button"
 				onClick={() => onNavigate(null)}
-				className="text-muted-foreground hover:text-foreground"
+				className={`hover:text-foreground ${currentFolderId ? "text-muted-foreground" : "text-foreground font-medium"}`}
 			>
 				Files
 			</button>
