@@ -30,7 +30,6 @@ export const fileRenameRoute = {
 
 		const safeName = body.filename.replace(/[^a-zA-Z0-9._-]/g, "_");
 
-		// IS is NULL-safe: matches folder_id = ? when non-null, or folder_id IS NULL when null
 		const conflict = db
 			.query<{ id: string }, [string, string | null, string]>(
 				"SELECT id FROM files WHERE filename = ? AND folder_id IS ? AND id != ?",

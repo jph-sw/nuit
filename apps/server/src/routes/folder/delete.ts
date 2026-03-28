@@ -15,14 +15,12 @@ export const folderDeleteRoute = {
 			return new Response("Not Found", { status: 404 });
 		}
 
-		// biome-ignore lint/style/noNonNullAssertion: <>
 		const { count: fileCount } = db
 			.query<{ count: number }, string>(
 				"SELECT COUNT(*) as count FROM files WHERE folder_id = ?",
 			)
 			.get(id)!;
 
-		// biome-ignore lint/style/noNonNullAssertion: <>
 		const { count: folderCount } = db
 			.query<{ count: number }, string>(
 				"SELECT COUNT(*) as count FROM folders WHERE parent_id = ?",
