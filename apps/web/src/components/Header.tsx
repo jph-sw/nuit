@@ -9,24 +9,36 @@ export default function Header() {
 	const signOut = useServerFn(signOutFn);
 
 	return (
-		<header className="sticky top-0 z-50 border-b px-4 backdrop-blur-lg">
-			<nav className="page-wrap flex flex-wrap items-center gap-x-3 gap-y-2 py-3 sm:py-4">
-				<div className="ml-auto flex items-center gap-1.5 sm:ml-0 sm:gap-2">
+		<header className="sticky top-0 z-50 h-12 border-b bg-background/90 backdrop-blur-sm">
+			<div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4">
+				<Link
+					to="/"
+					className="font-display text-base font-semibold tracking-tight text-foreground transition-opacity hover:opacity-75"
+				>
+					nuit
+				</Link>
+
+				<div className="flex items-center gap-1">
 					<ThemeToggle />
 					{user ? (
-						<div className="flex items-center gap-2">
-							<span className="hidden text-sm text-(--sea-ink-soft) sm:block">
+						<>
+							<span className="hidden px-2 text-xs text-muted-foreground sm:block">
 								{user.username}
 							</span>
-							<Button type="button" onClick={() => signOut()}>
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								onClick={() => signOut()}
+							>
 								Sign out
 							</Button>
-						</div>
+						</>
 					) : (
-						<Button render={<Link to="/login">Sign in</Link>} />
+						<Button variant="ghost" size="sm" render={<Link to="/login">Sign in</Link>} />
 					)}
 				</div>
-			</nav>
+			</div>
 		</header>
 	);
 }

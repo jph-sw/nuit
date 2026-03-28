@@ -16,11 +16,11 @@ export function FolderBreadcrumb({
 	});
 
 	return (
-		<nav className="flex items-center gap-1 text-sm mb-3">
+		<nav className="flex items-center gap-1 text-sm">
 			<button
 				type="button"
 				onClick={() => onNavigate(null)}
-				className={`hover:text-foreground ${currentFolderId ? "text-muted-foreground" : "text-foreground font-medium"}`}
+				className={`transition-colors hover:text-foreground ${currentFolderId ? "text-muted-foreground" : "font-medium text-foreground"}`}
 			>
 				Files
 			</button>
@@ -29,14 +29,14 @@ export function FolderBreadcrumb({
 					<HugeiconsIcon
 						key={`sep-${crumb.id}`}
 						icon={ArrowRight01Icon}
-						size={14}
-						className="text-muted-foreground"
+						size={12}
+						className="text-muted-foreground/50"
 					/>
 					<button
 						key={crumb.id}
 						type="button"
 						onClick={() => onNavigate(crumb.id)}
-						className="text-muted-foreground hover:text-foreground last:text-foreground last:font-medium"
+						className="text-muted-foreground transition-colors hover:text-foreground last:font-medium last:text-foreground"
 					>
 						{crumb.name}
 					</button>

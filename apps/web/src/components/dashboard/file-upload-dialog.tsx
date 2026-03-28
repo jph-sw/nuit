@@ -9,7 +9,7 @@ import {
 import { uploadFileFn } from "#/data/files-actions";
 import { filesQueryOptions } from "#/data/files-query-options";
 import { useAppForm } from "#/hooks/form";
-import { Add01Icon } from "@hugeicons/core-free-icons";
+import { Add01Icon, Upload01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -45,15 +45,15 @@ export function FileUploadDialog({ folderId = null }: { folderId?: string | null
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger
 				render={
-					<Button>
+					<Button size="sm">
 						<HugeiconsIcon icon={Add01Icon} />
 						Upload
 					</Button>
 				}
 			/>
-			<DialogContent className={"min-w-2xl"}>
+			<DialogContent className="min-w-2xl">
 				<DialogHeader>
-					<DialogTitle>Upload file/s</DialogTitle>
+					<DialogTitle>Upload files</DialogTitle>
 				</DialogHeader>
 				<form
 					className="space-y-4"
@@ -65,19 +65,41 @@ export function FileUploadDialog({ folderId = null }: { folderId?: string | null
 					<form.AppField
 						name="files"
 						children={(field) => (
-							<input
-								type="file"
-								multiple
-								className="w-full"
-								onChange={(e) => field.handleChange(Array.from(e.target.files ?? []))}
-							/>
+							<label className="flex w-full cursor-pointer flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors hover:border-ring hover:bg-accent/20">
+								<HugeiconsIcon
+									icon={Upload01Icon}
+									size={24}
+									strokeWidth={1.5}
+									className="text-muted-foreground"
+								/>
+								<div>
+									<p className="text-sm font-medium">Click to select files</p>
+									<p className="mt-0.5 text-xs text-muted-foreground">
+										or drag and drop here
+									</p>
+								</div>
+								{field.state.value.length > 0 && (
+									<p className="text-xs text-foreground">
+										{field.state.value.length} file
+										{field.state.value.length !== 1 ? "s" : ""} selected
+									</p>
+								)}
+								<input
+									type="file"
+									multiple
+									className="sr-only"
+									onChange={(e) =>
+										field.handleChange(Array.from(e.target.files ?? []))
+									}
+								/>
+							</label>
 						)}
 					/>
 					<form.Subscribe
 						selector={(state) => state.isSubmitting}
 						children={(isSubmitting) => (
-							<Button type="submit" disabled={isSubmitting}>
-								{isSubmitting ? "Uploading..." : "Upload"}
+							<Button type="submit" disabled={isSubmitting} size="sm">
+								{isSubmitting ? "Uploading…" : "Upload"}
 							</Button>
 						)}
 					/>

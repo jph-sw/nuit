@@ -26,6 +26,8 @@ import {
 	Copy01Icon,
 	Download01Icon,
 	Edit04Icon,
+	File01Icon,
+	Folder01Icon,
 	InformationCircleIcon,
 	MoreVerticalIcon,
 	Move01Icon,
@@ -110,15 +112,25 @@ function FileCard({ file }: { file: File }) {
 		<>
 			<ContextMenu>
 				<ContextMenuTrigger>
-					<div className="h-40 w-50 group rounded border bg-secondary flex flex-col justify-end hover:border-gray-700">
-						{/*placeholder for image, icon etc*/}
-						<div className="..." />
-						<div className="bg-linear-to-t from-background to-transparent rounded h-8 flex w-full justify-between items-center px-1">
-							<p className="truncate flex h-fit">{file.filename}</p>
+					<div className="group flex w-36 cursor-default select-none flex-col rounded-lg border bg-card transition-colors hover:bg-accent/40">
+						<div className="flex h-20 items-center justify-center rounded-t-lg">
+							<HugeiconsIcon
+								icon={File01Icon}
+								size={28}
+								strokeWidth={1.5}
+								className="text-muted-foreground"
+							/>
+						</div>
+						<div className="flex items-center gap-1 border-t px-2 py-1.5">
+							<p className="min-w-0 flex-1 truncate text-xs">{file.filename}</p>
 							<DropdownMenu>
 								<DropdownMenuTrigger
 									children={
-										<Button size={"icon-xs"} variant={"outline"}>
+										<Button
+											size="icon-xs"
+											variant="ghost"
+											className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+										>
 											<HugeiconsIcon icon={MoreVerticalIcon} />
 										</Button>
 									}
@@ -150,8 +162,22 @@ export function FileExplorer({
 	folders: Folder[];
 	onNavigate: (id: string) => void;
 }) {
+	if (folders.length === 0 && files.length === 0) {
+		return (
+			<div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
+				<HugeiconsIcon
+					icon={Folder01Icon}
+					size={36}
+					strokeWidth={1}
+					className="text-muted-foreground/40"
+				/>
+				<p className="text-xs text-muted-foreground">This folder is empty</p>
+			</div>
+		);
+	}
+
 	return (
-		<div className="w-full h-fit border rounded-md flex flex-wrap gap-1 p-2">
+		<div className="flex flex-wrap gap-2 p-3">
 			{folders.map((folder) => (
 				<FolderCard key={folder.id} folder={folder} onOpen={() => onNavigate(folder.id)} />
 			))}

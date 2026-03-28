@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Moon02Icon, Sun01Icon, ComputerIcon } from "@hugeicons/core-free-icons";
 import { Button } from "./ui/button";
 
 type ThemeMode = "light" | "dark" | "auto";
@@ -32,6 +34,18 @@ function applyThemeMode(mode: ThemeMode) {
 	document.documentElement.style.colorScheme = resolved;
 }
 
+const icons: Record<ThemeMode, typeof Sun01Icon> = {
+	light: Sun01Icon,
+	dark: Moon02Icon,
+	auto: ComputerIcon,
+};
+
+const labels: Record<ThemeMode, string> = {
+	light: "Light mode. Click to switch to dark.",
+	dark: "Dark mode. Click to switch to auto.",
+	auto: "Auto (system) mode. Click to switch to light.",
+};
+
 export default function ThemeToggle() {
 	const [mode, setMode] = useState<ThemeMode>("auto");
 
@@ -63,14 +77,16 @@ export default function ThemeToggle() {
 		window.localStorage.setItem("theme", nextMode);
 	}
 
-	const label =
-		mode === "auto"
-			? "Theme mode: auto (system). Click to switch to light mode."
-			: `Theme mode: ${mode}. Click to switch mode.`;
-
 	return (
-		<Button type="button" onClick={toggleMode} aria-label={label} title={label}>
-			{mode === "auto" ? "Auto" : mode === "dark" ? "Dark" : "Light"}
+		<Button
+			type="button"
+			variant="ghost"
+			size="icon"
+			onClick={toggleMode}
+			aria-label={labels[mode]}
+			title={labels[mode]}
+		>
+			<HugeiconsIcon icon={icons[mode]} size={15} strokeWidth={1.6} />
 		</Button>
 	);
 }

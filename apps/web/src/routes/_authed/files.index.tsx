@@ -1,5 +1,4 @@
 import { FileTable } from "#/components/dashboard/file-table";
-import { Card, CardContent, CardHeader } from "#/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "#/components/ui/tabs";
 import { filesQueryOptions, foldersQueryOptions } from "#/data/files-query-options";
 
@@ -41,48 +40,47 @@ function RouteComponent() {
 	};
 
 	return (
-		<main className="page-wrap px-4 pb-8 pt-14 flex justify-center">
-			<div className="w-6xl">
+		<main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-8">
+			<div className="mb-4 flex items-center justify-between">
 				<FolderBreadcrumb currentFolderId={currentFolderId} onNavigate={handleNavigate} />
-				<Card>
-					<CardHeader>
-						<div className="flex w-full justify-between items-center">
-							<div className="flex gap-2">
-								<FileUploadDialog folderId={currentFolderId} />
-								<Button variant="outline" onClick={() => setNewFolderOpen(true)}>
-									<HugeiconsIcon icon={FolderAddIcon} />
-									New folder
-								</Button>
-							</div>
-							<Tabs value={viewType} onValueChange={(e) => setViewType(e)}>
-								<TabsList>
-									<TabsTrigger value={"explorer"}>
-										<HugeiconsIcon icon={FolderFileStorageIcon} />
-									</TabsTrigger>
-									<TabsTrigger value={"list"}>
-										<HugeiconsIcon icon={ListViewIcon} />
-									</TabsTrigger>
-								</TabsList>
-							</Tabs>
-						</div>
-					</CardHeader>
-					<CardContent>
-						{files && folders ? (
-							viewType === "explorer" ? (
-								<FileExplorer
-									files={files}
-									folders={folders}
-									onNavigate={(id) => handleNavigate(id)}
-								/>
-							) : (
-								<FileTable files={files} />
-							)
-						) : (
-							"Loading"
-						)}
-					</CardContent>
-				</Card>
+				<Tabs value={viewType} onValueChange={(e) => setViewType(e)}>
+					<TabsList>
+						<TabsTrigger value="explorer">
+							<HugeiconsIcon icon={FolderFileStorageIcon} />
+						</TabsTrigger>
+						<TabsTrigger value="list">
+							<HugeiconsIcon icon={ListViewIcon} />
+						</TabsTrigger>
+					</TabsList>
+				</Tabs>
 			</div>
+
+			<div className="mb-3 flex items-center gap-2">
+				<FileUploadDialog folderId={currentFolderId} />
+				<Button variant="outline" size="sm" onClick={() => setNewFolderOpen(true)}>
+					<HugeiconsIcon icon={FolderAddIcon} />
+					New folder
+				</Button>
+			</div>
+
+			<div className="rounded-lg border">
+				{files && folders ? (
+					viewType === "explorer" ? (
+						<FileExplorer
+							files={files}
+							folders={folders}
+							onNavigate={(id) => handleNavigate(id)}
+						/>
+					) : (
+						<FileTable files={files} />
+					)
+				) : (
+					<div className="flex h-40 items-center justify-center text-xs text-muted-foreground">
+						Loading…
+					</div>
+				)}
+			</div>
+
 			<FolderCreateDialog
 				parentId={currentFolderId}
 				open={newFolderOpen}

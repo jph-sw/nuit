@@ -75,19 +75,28 @@ export function FolderCard({
 			<ContextMenu>
 				<ContextMenuTrigger>
 					<div
-						className="h-40 w-50 group rounded border bg-secondary flex flex-col justify-end hover:border-gray-700 cursor-pointer"
+						className="group flex w-36 cursor-pointer select-none flex-col rounded-lg border bg-card transition-colors hover:bg-accent/40"
 						onClick={onOpen}
 					>
-						<div className="flex-1 flex items-center justify-center">
-							<HugeiconsIcon icon={Folder01Icon} size={48} className="text-muted-foreground" />
+						<div className="flex h-20 items-center justify-center rounded-t-lg">
+							<HugeiconsIcon
+								icon={Folder01Icon}
+								size={32}
+								strokeWidth={1.5}
+								className="text-muted-foreground"
+							/>
 						</div>
-						<div className="bg-linear-to-t from-background to-transparent rounded h-8 flex w-full justify-between items-center px-1">
-							<p className="truncate text-sm">{folder.name}</p>
+						<div className="flex items-center gap-1 border-t px-2 py-1.5">
+							<p className="min-w-0 flex-1 truncate text-xs">{folder.name}</p>
 							<DropdownMenu>
 								<DropdownMenuTrigger
 									onClick={(e) => e.stopPropagation()}
 									children={
-										<Button size={"icon-xs"} variant={"outline"}>
+										<Button
+											size="icon-xs"
+											variant="ghost"
+											className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+										>
 											<HugeiconsIcon icon={MoreVerticalIcon} />
 										</Button>
 									}

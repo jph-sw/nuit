@@ -49,62 +49,80 @@ function LoginPage() {
 	}
 
 	return (
-		<main className="page-wrap flex min-h-[80vh] items-center justify-center px-4">
-			<div className="shadow-xl bg-secondary border w-full max-w-sm rounded-2xl px-8 py-10">
-				<p className="island-kicker mb-3">
-					{mode === "sign-in" ? "Welcome back" : "Create account"}
+		<main className="flex min-h-[calc(100svh-3rem)] flex-col items-center justify-center px-4">
+			<div className="w-full max-w-sm">
+				{/* Wordmark */}
+				<p className="mb-8 text-center text-xl font-semibold tracking-tight font-display">
+					nuit
 				</p>
-				<h1 className="display-title mb-8 text-2xl font-bold tracking-tight">
-					{mode === "sign-in" ? "Sign in" : "Sign up"}
-				</h1>
 
-				<form onSubmit={handleSubmit} className="flex flex-col gap-4">
-					<label className="flex flex-col gap-1.5 text-sm font-medium">
-						Username
-						<Input
-							name="username"
-							type="text"
-							required
-							autoComplete="username"
-						/>
-					</label>
-
-					<label className="flex flex-col gap-1.5 text-sm font-medium">
-						Password
-						<Input
-							name="password"
-							type="password"
-							required
-							autoComplete={
-								mode === "sign-in" ? "current-password" : "new-password"
-							}
-						/>
-					</label>
-
-					{error && (
-						<p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950/30 dark:text-red-400">
-							{error}
+				<div className="rounded-xl border bg-card px-8 py-8 shadow-xs">
+					<div className="mb-6">
+						<h1 className="text-base font-semibold text-card-foreground">
+							{mode === "sign-in" ? "Sign in" : "Create account"}
+						</h1>
+						<p className="mt-1 text-sm text-muted-foreground">
+							{mode === "sign-in"
+								? "Welcome back."
+								: "Get started with Nuit."}
 						</p>
-					)}
+					</div>
 
-					<Button type="submit" disabled={pending}>
-						{pending ? "…" : mode === "sign-in" ? "Sign in" : "Sign up"}
-					</Button>
-				</form>
+					<form onSubmit={handleSubmit} className="flex flex-col gap-4">
+						<label className="flex flex-col gap-1.5">
+							<span className="text-xs font-medium text-muted-foreground">
+								Username
+							</span>
+							<Input
+								name="username"
+								type="text"
+								required
+								autoComplete="username"
+								className="h-8"
+							/>
+						</label>
 
-				<p className="mt-6 text-center text-sm">
+						<label className="flex flex-col gap-1.5">
+							<span className="text-xs font-medium text-muted-foreground">
+								Password
+							</span>
+							<Input
+								name="password"
+								type="password"
+								required
+								autoComplete={
+									mode === "sign-in" ? "current-password" : "new-password"
+								}
+								className="h-8"
+							/>
+						</label>
+
+						{error && (
+							<p className="rounded-md bg-destructive/8 px-3 py-2 text-xs text-destructive">
+								{error}
+							</p>
+						)}
+
+						<Button type="submit" disabled={pending} size="sm" className="mt-1 w-full">
+							{pending ? "…" : mode === "sign-in" ? "Sign in" : "Create account"}
+						</Button>
+					</form>
+				</div>
+
+				<p className="mt-4 text-center text-xs text-muted-foreground">
 					{mode === "sign-in"
 						? "Don't have an account?"
 						: "Already have an account?"}{" "}
-					<Button
+					<button
 						type="button"
+						className="font-medium text-foreground underline-offset-3 hover:underline"
 						onClick={() => {
 							setMode(mode === "sign-in" ? "sign-up" : "sign-in");
 							setError(null);
 						}}
 					>
 						{mode === "sign-in" ? "Sign up" : "Sign in"}
-					</Button>
+					</button>
 				</p>
 			</div>
 		</main>
