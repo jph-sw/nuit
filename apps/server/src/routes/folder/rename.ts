@@ -1,9 +1,6 @@
-import { rename } from "node:fs/promises";
-import { join } from "node:path";
 import { type } from "arktype";
 import type { BunRequest } from "bun";
 import { db } from "../../db/db";
-import { UPLOAD_DIR, getFolderPath } from "../../utils/folder-path";
 import { authenticate } from "../../utils/request";
 
 const RenameBody = type({ name: "string > 0" });
@@ -30,15 +27,7 @@ export const folderRenameRoute = {
 			return Response.json({ error: body.summary }, { status: 400 });
 		}
 
-		// Compute old path before updating DB
-		const oldPath = join(UPLOAD_DIR, getFolderPath(id));
-
 		db.run("UPDATE folders SET name = ? WHERE id = ?", [body.name, id]);
-
-		// Compute new path after update
-		const newPath = join(UPLOAD_DIR, getFolderPath(id));
-
-		await rename(oldPath, newPath);
 
 		const folder = db.query("SELECT * FROM folders WHERE id = ?").get(id);
 		return Response.json(folder);

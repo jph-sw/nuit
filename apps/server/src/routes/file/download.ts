@@ -1,6 +1,6 @@
 import type { BunRequest } from "bun";
 import { db } from "../../db/db";
-import { getFilePath } from "../../utils/folder-path";
+import { getStoragePath } from "../../utils/storage";
 import { authenticate } from "../../utils/request";
 
 export const fileDownloadRoute = {
@@ -11,8 +11,8 @@ export const fileDownloadRoute = {
 		}
 
 		const row = db
-			.query<{ filename: string; folder_id: string | null }, string>(
-				"SELECT filename, folder_id FROM files WHERE id = ?",
+			.query<{ filename: string }, string>(
+				"SELECT filename FROM files WHERE id = ?",
 			)
 			.get(req.params.id);
 
@@ -20,7 +20,7 @@ export const fileDownloadRoute = {
 			return new Response("Not Found", { status: 404 });
 		}
 
-		const file = Bun.file(getFilePath(row.folder_id, row.filename));
+		const file = Bun.file(getStoragePath(req.params.id));
 
 		if (!(await file.exists())) {
 			return new Response("Not Found", { status: 404 });

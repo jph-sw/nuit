@@ -1,11 +1,7 @@
-import { rename } from "node:fs/promises";
-import { join } from "node:path";
 import { type } from "arktype";
 import type { BunRequest } from "bun";
 import { db } from "../../db/db";
 import { authenticate } from "../../utils/request";
-
-const UPLOAD_DIR = join(import.meta.dir, "../../../../../data");
 
 const RenameBody = type({ filename: "string > 0" });
 
@@ -18,7 +14,9 @@ export const fileRenameRoute = {
 
 		const { id } = req.params;
 		const row = db
-			.query<{ filename: string }, string>("SELECT filename FROM files WHERE id = ?")
+			.query<{ filename: string; folder_id: string | null }, string>(
+				"SELECT filename, folder_id FROM files WHERE id = ?",
+			)
 			.get(id);
 
 		if (!row) {
@@ -32,11 +30,20 @@ export const fileRenameRoute = {
 
 		const safeName = body.filename.replace(/[^a-zA-Z0-9._-]/g, "_");
 
-		if (await Bun.file(join(UPLOAD_DIR, safeName)).exists()) {
-			return Response.json({ error: "A file with that name already exists" }, { status: 409 });
+		// IS is NULL-safe: matches folder_id = ? when non-null, or folder_id IS NULL when null
+		const conflict = db
+			.query<{ id: string }, [string, string | null, string]>(
+				"SELECT id FROM files WHERE filename = ? AND folder_id IS ? AND id != ?",
+			)
+			.get(safeName, row.folder_id, id);
+
+		if (conflict) {
+			return Response.json(
+				{ error: "A file with that name already exists in this folder" },
+				{ status: 409 },
+			);
 		}
 
-		await rename(join(UPLOAD_DIR, row.filename), join(UPLOAD_DIR, safeName));
 		db.run("UPDATE files SET filename = ? WHERE id = ?", [safeName, id]);
 
 		return Response.json({ filename: safeName });

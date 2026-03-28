@@ -1,9 +1,6 @@
-import { rename, mkdir } from "node:fs/promises";
-import { join } from "node:path";
 import { type } from "arktype";
 import type { BunRequest } from "bun";
 import { db } from "../../db/db";
-import { UPLOAD_DIR, getFolderPath } from "../../utils/folder-path";
 import { authenticate } from "../../utils/request";
 
 const MoveBody = type({ folder_id: "string | null" });
@@ -38,19 +35,22 @@ export const fileMoveRoute = {
 			}
 		}
 
-		const oldFolderPath = file.folder_id ? getFolderPath(file.folder_id) : "";
-		const newFolderPath = body.folder_id ? getFolderPath(body.folder_id) : "";
+		// IS is NULL-safe: matches folder_id = ? when non-null, or folder_id IS NULL when null
+		const conflict = db
+			.query<{ id: string }, [string, string | null, string]>(
+				"SELECT id FROM files WHERE filename = ? AND folder_id IS ? AND id != ?",
+			)
+			.get(file.filename, body.folder_id, id);
 
-		const oldPath = oldFolderPath
-			? join(UPLOAD_DIR, oldFolderPath, file.filename)
-			: join(UPLOAD_DIR, file.filename);
-		const newDir = newFolderPath ? join(UPLOAD_DIR, newFolderPath) : UPLOAD_DIR;
-		const newPath = join(newDir, file.filename);
-
-		await mkdir(newDir, { recursive: true });
-		await rename(oldPath, newPath);
+		if (conflict) {
+			return Response.json(
+				{ error: "A file with that name already exists in the destination folder" },
+				{ status: 409 },
+			);
+		}
 
 		db.run("UPDATE files SET folder_id = ? WHERE id = ?", [body.folder_id, id]);
+
 		return Response.json({ folder_id: body.folder_id });
 	},
 };

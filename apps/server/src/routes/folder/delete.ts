@@ -1,8 +1,5 @@
-import { rmdir } from "node:fs/promises";
-import { join } from "node:path";
 import type { BunRequest } from "bun";
 import { db } from "../../db/db";
-import { UPLOAD_DIR, getFolderPath } from "../../utils/folder-path";
 import { authenticate } from "../../utils/request";
 
 export const folderDeleteRoute = {
@@ -36,9 +33,7 @@ export const folderDeleteRoute = {
 			return Response.json({ error: "Folder is not empty" }, { status: 409 });
 		}
 
-		const dirPath = join(UPLOAD_DIR, getFolderPath(id));
 		db.run("DELETE FROM folders WHERE id = ?", [id]);
-		await rmdir(dirPath);
 
 		return Response.json({});
 	},
